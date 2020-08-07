@@ -1,0 +1,1 @@
+void drawCircle(int x, int y, int diameter, int color);

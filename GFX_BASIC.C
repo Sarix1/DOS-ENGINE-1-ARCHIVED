@@ -1,18 +1,18 @@
 #include "TYPES.H"
 #include "VIDEO.H"
-#include "GFX.H"
+#include "MATH.H"
 
 // CAUTION: no boundary checking in below functions!
 
 // Write a pixel to off-screen buffer or VGA buffer, depending where drawTarget points
-inline void setPixel(int x, int y, int color)
+void setPixel(int x, int y, int color)
 {
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 		drawTarget[(y<<8) + (y<<6) + x] = color;
 }
 
 // Horizontal line
-inline void setPixelsHorizontally(int x, int y, int len, int color)
+void setPixelsHorizontally(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
@@ -23,7 +23,7 @@ inline void setPixelsHorizontally(int x, int y, int len, int color)
 }
 
 // Vertical line
-inline void setPixelsVertically(int x, int y, int len, int color)
+void setPixelsVertically(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)

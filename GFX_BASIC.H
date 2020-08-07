@@ -1,6 +1,6 @@
-inline void setPixel(int x, int y, int color);
-inline void setPixelsHorizontally(int x, int y, int len, int color);
-inline void setPixelsVertically(int x, int y, int len, int color);
+void setPixel(int x, int y, int color);
+void setPixelsHorizontally(int x, int y, int len, int color);
+void setPixelsVertically(int x, int y, int len, int color);
 void setPixelsDiagonally(int x, int y, int len, int dir, int color);
 void setPixelsSlope(int ax, int ay, int bx, int by, int color);
 void drawBox(int x, int y, int w, int h, int color);

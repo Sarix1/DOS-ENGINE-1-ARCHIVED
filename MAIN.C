@@ -1,6 +1,8 @@
 #include "TEXT.H"
 #include "VIDEO.H"
+#include "MATH.H"
 #include "GFX_BASIC.H"
+#include "GFX_TRIG.H"
 
 int main()
 {
@@ -12,11 +14,12 @@ int main()
 	
 	// Initialize video
 	initVideo();
-	// initArrays();
+	initTrigTables();
 	drawTarget = offScreen;
 	
 	// Test draw
 	drawBoxCenter(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 50, 50, 4);
+	drawCircle(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 50, 12);
 	updateBuffer();
 	
 	// Wait for user before exit
