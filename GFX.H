@@ -1,0 +1,20 @@
+/*
+// Math constants
+#ifndef M_PI
+#define M_PI				3.14159265358979323846264338327950288
+#endif
+#define DEGREES				360
+#define ANGLES				4096
+// Precision of trigonometric calculations
+#define TRIGONOMETRY		4096
+#define FRACTIONAL_PART		14
+// Magnitude difference between TRIGONOMETRY and (1<<FRACTIONAL_PART)
+#define FRAC_TO_TRIG		2
+*/
+
+// Macros
+#define sign(x)				(((x) < 0) ? -1 : (((x) > 0) ? 1 : 0))
+/*
+#define angToDeg(x)			((double)(x) * DEGREES / ANGLES)
+#define degToAng(x)			((double)(x) * ANGLES / DEGREES)
+*/
