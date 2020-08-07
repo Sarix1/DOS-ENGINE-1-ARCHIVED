@@ -1,21 +1,6 @@
 #include <stdio.h>
 #include <conio.h>
-
-// ANSI escape color codes
-enum color
-{
-	BLACK	= 0,
-	RED		= 1,
-	GREEN	= 2,
-	YELLOW	= 3,
-	BLUE	= 4,
-	MAGENTA	= 5,
-	CYAN	= 6,
-	WHITE	= 7,
-	FG		= 30,
-	BG		= 40,
-	LIGHT	= 60
-};
+#include "TEXT.H"
 
 void setTextPosition(int x, int y)
 {
@@ -39,15 +24,6 @@ void putText(char* string, int fg, int bg, int x, int y)
 
 void resetText()
 {
-	putText("", 0, 0, 0, 0);
-}
-
-int main()
-{
 	system("cls");
-	putText("Hello", FG+BLUE, BG+BLACK, 0, 0);
-	putText("World", FG+RED, BG+BLACK, 2, 1);
-	setTextColor(0, 0);
-	
-	return 0;
+	putText("", 0, 0, 0, 0);
 }
