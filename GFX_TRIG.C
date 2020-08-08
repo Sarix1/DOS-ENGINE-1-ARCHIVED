@@ -2,16 +2,17 @@
 #include "GFX_BASIC.H"
 
 // Circle drawing
-void drawCircle(int x, int y, int diameter, int color)
+void drawCircle(const int x, const int y, const int diameter, const int color)
 {
 	// r is for inverse of remainder
-	const int radius			= diameter / 2;
-	const long inverseRadius	= ((1 / (float)radius) * (1 << FRACTIONAL_PART));
-	const int r					= (diameter % 2) ^ 1;
+	const int	radius			= diameter / 2;
+	const long	inverseRadius	= ((1 / (float)radius) * (1 << FRACTION)) + 0.5;
+	const int	r				= (diameter % 2) ^ 1;
 	
-	int px			= 0;
-	int py			= radius;
-	long distance	= 0;
+	int px				= 0;
+	int py				= radius;
+	long distance		= 0;
+	// long distanceRatio	= 0;
 	
 	while (px <= py)
 	{
@@ -26,6 +27,9 @@ void drawCircle(int x, int y, int diameter, int color)
 
 		px++;
 		distance += inverseRadius;
-		py = (int)(((radius * (long)(SinAcosTable[distance >> 2])) >> FRACTIONAL_PART) + 1);
+		
+		// distanceRatio = distance >> 
+		
+		py = (int)(((radius * (long long)(SinAcosTable[distance >> FRAC_TO_TRIG])) >> FRACTION)) + 1;
 	}
 }

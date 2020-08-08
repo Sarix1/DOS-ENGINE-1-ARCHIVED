@@ -1,3 +1,4 @@
+#include <math.h>
 #include "MATH.H"
 
 // Initialize tables and arrays
@@ -10,7 +11,7 @@ void initTrigTables()
 	for (i = 0; i < ANGLES + ANGLES/4; i++)
 	{
 		real = sin((i * 2 * M_PI) / ANGLES);
-		SinCosTable[i] = real * (1 << FRACTIONAL_PART);
+		SinCosTable[i] = real * (1 << FRACTION);
 	}
 
 	// Init Sin(aCos(x)) table
@@ -19,7 +20,7 @@ void initTrigTables()
 		x = (long double)i / TRIGONOMETRY;
 		real = sqrt(1 - x*x);
 		// real = sin(acos((double)i / TRIGONOMETRY));
-		SinAcosTable[i] = real * (1 << FRACTIONAL_PART);
+		SinAcosTable[i] = real * (1 << FRACTION) + 0.5;
 	}
 }
 
@@ -27,11 +28,11 @@ void initTrigTables()
 int sinAngle(int value, int angle)
 {
 	long long temp;
-	temp = (long long)value * (long long)(1 << FRACTIONAL_PART); // to fixed point
+	temp = (long long)value * (long long)(1 << FRACTION); // to fixed point
 	temp *= (long long)SinTable[angle];	// multiply with Sin
-	temp >>= FRACTIONAL_PART;			// bitshift correction
-	temp += FRACTIONAL_PART * 160;
-	temp /= (1 << FRACTIONAL_PART);		// convert to normal	
+	temp >>= FRACTION;			// bitshift correction
+	temp += FRACTION * 160;
+	temp /= (1 << FRACTION);		// convert to normal	
 	return (int)temp;					// cast to integer
 }
 
@@ -39,10 +40,10 @@ int sinAngle(int value, int angle)
 int cosAngle(int value, int angle)
 {
 	long long temp;
-	temp = (long long)value * (long long)(1 << FRACTIONAL_PART); // to fixed point
+	temp = (long long)value * (long long)(1 << FRACTION); // to fixed point
 	temp *= (long long)CosTable[angle];	// multiply with Cos
-	temp >>= FRACTIONAL_PART;			// bitshift correction
-	temp += FRACTIONAL_PART * 160;
-	temp /= (1 << FRACTIONAL_PART);		// convert to normal	
+	temp >>= FRACTION;			// bitshift correction
+	temp += FRACTION * 160;
+	temp /= (1 << FRACTION);		// convert to normal	
 	return (int)temp;					// cast to integer
 }

@@ -15,9 +15,13 @@ void setPixel(int x, int y, int color)
 void setPixelsHorizontally(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
+	// this is a boundary check! move elsewhere?
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 	{
-		if (x+len >= SCREEN_WIDTH) len -= (x+len - SCREEN_WIDTH);
+		// this is a crop! move elsewhere?
+		if (x+len >= SCREEN_WIDTH)
+			len -= (x+len - SCREEN_WIDTH);
+		
 		_fmemset(p, color, len);
 	}
 }
@@ -26,9 +30,13 @@ void setPixelsHorizontally(int x, int y, int len, int color)
 void setPixelsVertically(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
+	// this is a boundary check! move elsewhere?
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 	{
-		if (y+len >= SCREEN_HEIGHT) len -= (y+len - SCREEN_HEIGHT);
+		// this is a crop! move elsewhere?
+		if (y+len >= SCREEN_HEIGHT)
+			len -= (y+len - SCREEN_HEIGHT);
+		
 		while (len--)
 		{
 			*p = color;
@@ -130,7 +138,8 @@ void drawBox(int x, int y, int w, int h, int color)
 // Draw a box centered at x and y
 void drawBoxCenter(int x, int y, int w, int h, int color)
 {
-	drawBox(x-((w+1)/2), y-((h+1)/2), w, h, color);
+	drawBox((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
+	// drawBox(x-(w/2)+((w%2)^1), y-(h/2)+((h%2)^1), w, h, color);
 }
 
 // Fill the screen

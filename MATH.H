@@ -1,14 +1,14 @@
 // Math constants
-#ifndef M_PI
+// #ifndef M_PI
 #define M_PI				3.14159265358979323846264338327950288
-#endif
+// #endif
 #define DEGREES				360
 #define ANGLES				1024//4096
 // Precision of trigonometric calculations
 #define TRIGONOMETRY		1024//4096
-#define FRACTIONAL_PART		14
-// Magnitude difference between TRIGONOMETRY and (1<<FRACTIONAL_PART)
-#define FRAC_TO_TRIG		2
+#define FRACTION			14
+// Magnitude difference between TRIGONOMETRY and (1<<FRACTION)
+#define FRAC_TO_TRIG		4
 
 // Macros
 #define sign(x)				(((x) < 0) ? -1 : (((x) > 0) ? 1 : 0))
@@ -18,7 +18,7 @@
 // Tables
 long			SinCosTable[ANGLES + ANGLES/4];
 long*			SinTable = SinCosTable;
-long*			CosTable = SinCosTable + ANGLES/4;
+long*			CosTable = &(SinCosTable[ANGLES/4]);
 unsigned int	SinAcosTable[TRIGONOMETRY];
 
 // Math functions
