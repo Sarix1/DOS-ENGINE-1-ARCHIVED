@@ -127,8 +127,14 @@ void setPixelsSlope(int ax, int ay, int bx, int by, int color)
 	}
 }
 
+// Fill the screen
+void drawFill(int color)
+{
+	_fmemset(drawTarget, color, SCREEN_SIZE);
+}
+
 // Draw a box
-void drawBox(int x, int y, int w, int h, int color)
+void drawBoxFill(int x, int y, int w, int h, int color)
 {
 	// Needs boundary checking here
 	while (h--)
@@ -136,30 +142,23 @@ void drawBox(int x, int y, int w, int h, int color)
 }
 
 // Draw a box centered at x and y
-void drawBoxCenter(int x, int y, int w, int h, int color)
+void drawBoxFillCenter(int x, int y, int w, int h, int color)
 {
-	drawBox((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
-	// drawBox(x-(w/2)+((w%2)^1), y-(h/2)+((h%2)^1), w, h, color);
-}
-
-// Fill the screen
-void drawFill(int color)
-{
-	_fmemset(drawTarget, color, SCREEN_SIZE);
+	drawBoxFill((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
 }
 
 // Draw a rectangular frame
-void drawFrame(int x, int y, int w, int h, int color)
+void drawBoxFrame(int x, int y, int w, int h, int color)
 {
 	// Needs boundary checking here
-	setPixelsHorizontally	(x,		y,		w+1,	color);
-	setPixelsHorizontally	(x,		y+h,	w+1,	color);
-	setPixelsVertically		(x,		y+1,	h-1,	color);
-	setPixelsVertically		(x+w,	y+1,	h-1,	color);
+	setPixelsHorizontally	(x,		y,		w,	color);
+	setPixelsHorizontally	(x,		y+h-1,	w,	color);
+	setPixelsVertically		(x,		y,		h,	color);
+	setPixelsVertically		(x+w-1,	y,		h,	color);
 }
 
 // Draw a rectangular frame centered at x and y
-void drawFrameCenter(int x, int y, int w, int h, int color)
+void drawBoxFrameCenter(int x, int y, int w, int h, int color)
 {
-	drawFrame(x-((w+1)/2), y-((h+1)/2), w, h, color);
+	drawBoxFrame((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
 }

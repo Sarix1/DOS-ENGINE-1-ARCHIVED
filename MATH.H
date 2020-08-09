@@ -3,12 +3,13 @@
 #define M_PI				3.14159265358979323846264338327950288
 // #endif
 #define DEGREES				360
-#define ANGLES				1024//4096
+#define ANGLES				1024
 // Precision of trigonometric calculations
-#define TRIGONOMETRY		1024//4096
-#define FRACTION			14
+#define TRIG_PRECISION		10
+#define TRIGONOMETRY		(1<<TRIG_PRECISION) 		// 1024
+#define FRACTION			14							// 16384
 // Magnitude difference between TRIGONOMETRY and (1<<FRACTION)
-#define FRAC_TO_TRIG		4
+#define FRAC_TO_TRIG		(FRACTION - TRIG_PRECISION)	// 4
 
 // Macros
 #define sign(x)				(((x) < 0) ? -1 : (((x) > 0) ? 1 : 0))
