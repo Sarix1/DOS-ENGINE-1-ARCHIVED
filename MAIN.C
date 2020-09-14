@@ -2,10 +2,13 @@
 #include "VIDEO.H"
 #include "MATH.H"
 #include "GFX_BASIC.H"
-#include "GFX_TRIG.H"
+#include "GFX_TRIANGLE.H"
 
 int main()
 {
+	// Test variables
+	struct Point2D a, b, c;
+	
 	// Hello
 	resetText();
 	putText("Hello", FG+BLUE, BG+BLACK, 0, 0);
@@ -31,6 +34,16 @@ int main()
 	setPixelsSlope(0, 0, SCREEN_WIDTH-1, SCREEN_HEIGHT-1, 5);
 	drawCircleFrame(SCREEN_WIDTH/2-1, SCREEN_HEIGHT/2-1, 2, 15);
 	
+	a.x = 100;
+	a.y = 100;
+	b.x = 200;
+	b.y = 80;
+	c.x = 150;
+	c.y = 150;
+	
+	drawTriangle(&a, &b, &c, 12);
+	
+	// Update buffer
 	updateBuffer();
 	
 	// Wait for user before exit

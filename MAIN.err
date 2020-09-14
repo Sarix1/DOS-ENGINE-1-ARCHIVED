@@ -1,0 +1,6 @@
+TYPES.H(2): Warning! W138: No newline at end of file
+VIDEO.H(29): Warning! W138: No newline at end of file
+MATH.H(32): Warning! W138: No newline at end of file
+GFX_BASIC.H(13): Warning! W138: No newline at end of file
+GFX_TRIANGLE.H(7): Warning! W138: No newline at end of file
+MAIN.C(50): Warning! W131: No prototype found for function 'getch'

@@ -8,3 +8,6 @@ void drawBoxFill(int x, int y, int w, int h, int color);
 void drawBoxFillCenter(int x, int y, int w, int h, int color);
 void drawBoxFrame(int x, int y, int w, int h, int color);
 void drawBoxFrameCenter(int x, int y, int w, int h, int color);
+void drawCircleFrame(int x, int y, int diameter, int color);
+void drawCircleFill(int x, int y, int diameter, int color);
+void drawCircleThick(int x, int y, int diameter, int thickness, int color);

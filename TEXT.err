@@ -1,0 +1,3 @@
+TEXT.C(27): Warning! W131: No prototype found for function 'system'
+TEXT.C(27): Warning! W308: The function 'system' without prototyped parameters called
+TEXT.C(27): Note! I2002: 'system' defined in: TEXT.C(27)

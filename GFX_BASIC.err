@@ -1,0 +1,16 @@
+TYPES.H(2): Warning! W138: No newline at end of file
+TYPES.H(2): Warning! W138: No newline at end of file
+VIDEO.H(29): Warning! W138: No newline at end of file
+MATH.H(32): Warning! W138: No newline at end of file
+GFX_BASIC.H(13): Warning! W138: No newline at end of file
+GFX_BASIC.C(26): Warning! W131: No prototype found for function '_fmemset'
+GFX_BASIC.C(86): Warning! W131: No prototype found for function 'abs'
+GFX_BASIC.C(284): Warning! W138: No newline at end of file
+GFX_BASIC.C(26): Warning! W308: The function '_fmemset' without prototyped parameters called
+GFX_BASIC.C(26): Note! I2002: '_fmemset' defined in: GFX_BASIC.C(26)
+GFX_BASIC.C(86): Warning! W308: The function 'abs' without prototyped parameters called
+GFX_BASIC.C(86): Note! I2002: 'abs' defined in: GFX_BASIC.C(86)
+GFX_BASIC.C(87): Warning! W308: The function 'abs' without prototyped parameters called
+GFX_BASIC.C(87): Note! I2002: 'abs' defined in: GFX_BASIC.C(86)
+GFX_BASIC.C(134): Warning! W308: The function '_fmemset' without prototyped parameters called
+GFX_BASIC.C(134): Note! I2002: '_fmemset' defined in: GFX_BASIC.C(26)

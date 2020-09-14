@@ -3,19 +3,14 @@
 #define M_PI				3.14159265358979323846264338327950288
 // #endif
 #define DEGREES				360
-#define ANGLES				1024
+#define ANGLES				1024//4096
 // Precision of trigonometric calculations
-#define TRIG_PRECISION		10
-#define TRIGONOMETRY		(1<<TRIG_PRECISION) 		// 1024
-#define FRACTION			14							// 16384
-// Magnitude difference between TRIGONOMETRY and (1<<FRACTION)
-#define FRAC_TO_TRIG		(FRACTION - TRIG_PRECISION)	// 4
+#define TRIGONOMETRY		1024//4096
+#define FRACTIONAL_PART		14
+// Magnitude difference between TRIGONOMETRY and (1<<FRACTIONAL_PART)
+#define FRAC_TO_TRIG		2
 
 // Macros
-#define min(a, b)			((a < b) ? (a) : (b))
-#define max(a, b)			((a > b) ? (a) : (b))
-#define min3(a, b, c)		(min(min((a), (b)), (c)))
-#define max3(a, b, c)		(max(max((a), (b)), (c)))
 #define sign(x)				(((x) < 0) ? -1 : (((x) > 0) ? 1 : 0))
 #define angToDeg(x)			((double)(x) * DEGREES / ANGLES)
 #define degToAng(x)			((double)(x) * ANGLES / DEGREES)
@@ -23,7 +18,7 @@
 // Tables
 long			SinCosTable[ANGLES + ANGLES/4];
 long*			SinTable = SinCosTable;
-long*			CosTable = &(SinCosTable[ANGLES/4]);
+long*			CosTable = SinCosTable + ANGLES/4;
 unsigned int	SinAcosTable[TRIGONOMETRY];
 
 // Math functions

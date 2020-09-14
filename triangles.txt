@@ -1,0 +1,5 @@
+int				EndPointArray[2][SCREEN_HEIGHT];
+
+	
+	// Init endpoint array
+	memset(EndPointArray, 0, sizeof(EndPointArray));
