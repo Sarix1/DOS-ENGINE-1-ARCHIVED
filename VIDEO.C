@@ -35,8 +35,8 @@ void initVideo()
 // Copy off-screen buffer to VGA buffer, wait for vertical retrace
 void updateBuffer()
 {
-	while (inportb(INPUT_STATUS_0) & 8);
-	while (!(inportb(INPUT_STATUS_0) & 8));
+	while (inportb(INPUT_STATUS) & VRETRACE);
+	while (!(inportb(INPUT_STATUS) & VRETRACE));
 	_fmemcpy(screen, offScreen, SCREEN_SIZE);
 }
 
@@ -46,7 +46,7 @@ inline void setPixelInt86(int x, int y, int color)
 	union REGS regs;
 	regs.h.ah = PLOT_PIXEL;
 	regs.h.al = color;
-	regs.x.cx = x;
-	regs.x.dx = y;
+	regs.w.cx = x;
+	regs.w.dx = y;
 	int86(VIDEO_INT, &regs, &regs);
 }

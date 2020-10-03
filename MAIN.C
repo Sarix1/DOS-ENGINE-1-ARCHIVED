@@ -1,13 +1,15 @@
 #include "TEXT.H"
-#include "VIDEO.H"
 #include "MATH.H"
+#include "VIDEO.H"
 #include "GFX_BASIC.H"
+#include "GFX_BITMAP.H"
 #include "GFX_TRIANGLE.H"
 
 int main()
 {
 	// Test variables
 	struct Point2D a, b, c;
+	struct BITMAP bmp;
 	
 	// Hello
 	resetText();
@@ -42,6 +44,10 @@ int main()
 	c.y = 150;
 	
 	drawTriangle(&a, &b, &c, 12);
+	
+	loadBitmap("PIC.BMP", &bmp);
+	setPalette(bmp.palette);
+	setPixelsBitmap(&bmp, 0, 0);
 	
 	// Update buffer
 	updateBuffer();
