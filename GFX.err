@@ -1,4 +1,0 @@
-GFX.C(47): Warning! W131: No prototype found for function 'system'
-GFX.C(53): Warning! W138: No newline at end of file
-GFX.C(47): Warning! W308: The function 'system' without prototyped parameters called
-GFX.C(47): Note! I2002: 'system' defined in: GFX.C(47)
