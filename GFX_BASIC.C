@@ -12,6 +12,12 @@ void setPixel(int x, int y, int color)
 		drawTarget[(y<<8) + (y<<6) + x] = color;
 }
 
+// Fill the screen
+void setPixelsAll(int color)
+{
+	_fmemset(drawTarget, color, SCREEN_SIZE);
+}
+
 // Horizontal line
 void setPixelsHorizontally(int x, int y, int len, int color)
 {
@@ -128,10 +134,45 @@ void setPixelsSlope(int ax, int ay, int bx, int by, int color)
 	}
 }
 
+// Put a single pixel
+void drawPixel(int x, int y, int color)
+{
+	// boundary check
+	setPixel(x, y, color);
+}
+
 // Fill the screen
 void drawFill(int color)
 {
-	_fmemset(drawTarget, color, SCREEN_SIZE);
+	setPixelsAll(color);
+}
+
+// Draw a line between two points
+void drawLine(struct Point2D* p1, struct Point2D* p2, int color)
+{
+	// optimize
+	setPixelsSlope(p1->x, p1->y, p2->x, p2->y, color);
+}
+
+// Draw multiple lines between points
+void drawLines(struct Point2D* points[], int color)
+{
+	int i = 0;
+	while (points[++i] != NULL)
+	{
+		drawLine(points[i-1], points[i], color);
+	}
+}
+
+// Draw a polygon
+void drawPolygon(struct Point2D* points[], int color)
+{
+	int i = 0;
+	while (points[++i] != NULL)
+	{
+		drawLine(points[i-1], points[i], color);
+	}
+	drawLine(points[i-1], points[0], color);
 }
 
 // Draw a box
@@ -281,4 +322,45 @@ void drawCircleThick(int x, int y, int diameter, int thickness, int color)
 		px			 = (int)(((radius * (long long)widthRatio) >> FRACTION) + 1);
 		py++;
 	}
+}
+
+// Check which side of a line a point falls on
+int orient2D(struct Point2D* a, struct Point2D* b, struct Point2D* c)
+{
+	return (b->x - a->x) * (c->y - a->y) - (b->y - a->y) * (c->x - a->x);
+}
+
+// Fill a triangle between three points
+void drawTriangleFill(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3, int color)
+{
+    // Variable declarations
+    int w1, w2, w3;
+    struct Point2D p;
+    
+    // Calculate triangle bounding box
+    int minX = min3(p1->x, p2->x, p3->x);
+    int minY = min3(p1->y, p2->y, p3->y);
+    int maxX = max3(p1->x, p2->x, p3->x);
+    int maxY = max3(p1->y, p2->y, p3->y);
+    
+    // Clip bounding box coordinates to screen
+    minX = max(minX, 0);
+    minY = max(minY, 0);
+    maxX = min(maxX, SCREEN_WIDTH - 1);
+    maxY = min(maxY, SCREEN_HEIGHT - 1);
+    
+    // Rasterize triangle
+    for (p.y = minY; p.y <= maxY; p.y++)
+    {
+        for (p.x = minX; p.x <= maxX; p.x++)
+        {
+            // Calculate barycentric coordinates
+            w1 = orient2D(p2, p3, &p);
+            w2 = orient2D(p3, p1, &p);
+            w3 = orient2D(p1, p2, &p);
+            
+            if (w1 >= 0 && w2 >= 0 && w3 >= 0)
+                setPixel(p.x, p.y, color);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 #include "VIDEO.H"
+#include "GFX_SPRITE.H"
 
 //Draw a sprite with transparency
 void blitSprite(struct sprite* sprite, int x, int y)

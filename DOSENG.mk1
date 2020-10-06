@@ -11,12 +11,11 @@ C:\Dev\C\DOSENG\GFX_BITMAP.obj : C:\Dev\C\DOSENG\GFX_BITMAP.C .AUTODEPEND
  *wcc GFX_BITMAP.C -i="C:\Dev\WATCOM/h" -w4 -e25 -zq -od -d2 -4 -bt=dos -fo=&
 .obj -ml
 
-C:\Dev\C\DOSENG\GFX_TRIANGLE.obj : C:\Dev\C\DOSENG\GFX_TRIANGLE.C .AUTODEPEN&
-D
+C:\Dev\C\DOSENG\GFX_SPRITE.obj : C:\Dev\C\DOSENG\GFX_SPRITE.C .AUTODEPEND
  @C:
  cd C:\Dev\C\DOSENG
- *wcc GFX_TRIANGLE.C -i="C:\Dev\WATCOM/h" -w4 -e25 -zq -od -d2 -4 -bt=dos -f&
-o=.obj -ml
+ *wcc GFX_SPRITE.C -i="C:\Dev\WATCOM/h" -w4 -e25 -zq -od -d2 -4 -bt=dos -fo=&
+.obj -ml
 
 C:\Dev\C\DOSENG\INPUT.obj : C:\Dev\C\DOSENG\INPUT.C .AUTODEPEND
  @C:
@@ -49,13 +48,13 @@ C:\Dev\C\DOSENG\VIDEO.obj : C:\Dev\C\DOSENG\VIDEO.C .AUTODEPEND
 -ml
 
 C:\Dev\C\DOSENG\DOSENG.exe : C:\Dev\C\DOSENG\GFX_BASIC.obj C:\Dev\C\DOSENG\G&
-FX_BITMAP.obj C:\Dev\C\DOSENG\GFX_TRIANGLE.obj C:\Dev\C\DOSENG\INPUT.obj C:\&
-Dev\C\DOSENG\MAIN.obj C:\Dev\C\DOSENG\MATH.obj C:\Dev\C\DOSENG\TEXT.obj C:\D&
-ev\C\DOSENG\VIDEO.obj .AUTODEPEND
+FX_BITMAP.obj C:\Dev\C\DOSENG\GFX_SPRITE.obj C:\Dev\C\DOSENG\INPUT.obj C:\De&
+v\C\DOSENG\MAIN.obj C:\Dev\C\DOSENG\MATH.obj C:\Dev\C\DOSENG\TEXT.obj C:\Dev&
+\C\DOSENG\VIDEO.obj .AUTODEPEND
  @C:
  cd C:\Dev\C\DOSENG
- @%write DOSENG.lk1 FIL GFX_BASIC.obj,GFX_BITMAP.obj,GFX_TRIANGLE.obj,INPUT.&
-obj,MAIN.obj,MATH.obj,TEXT.obj,VIDEO.obj
+ @%write DOSENG.lk1 FIL GFX_BASIC.obj,GFX_BITMAP.obj,GFX_SPRITE.obj,INPUT.ob&
+j,MAIN.obj,MATH.obj,TEXT.obj,VIDEO.obj
  @%append DOSENG.lk1 
  *wlink name DOSENG d all sys dos op m op maxe=25 op q op symf @DOSENG.lk1
 

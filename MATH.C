@@ -28,10 +28,14 @@ void initTrigTables()
 int sinAngle(int value, int angle)
 {
 	long long temp;
+	
+	while (angle < 0)		{angle += ANGLES;}
+	while (angle >= ANGLES)	{angle -= ANGLES;}
+	
 	temp = (long long)value * (long long)(1 << FRACTION);	// to fixed point
 	temp *= (long long)SinTable[angle];						// multiply with Sin
 	temp >>= FRACTION;										// bitshift correction
-	temp += FRACTION * 160;
+	//temp += FRACTION * 160;
 	temp /= (1 << FRACTION);								// convert back	
 	return (int)temp;										// cast to integer
 }
@@ -40,10 +44,14 @@ int sinAngle(int value, int angle)
 int cosAngle(int value, int angle)
 {
 	long long temp;
+	
+	while (angle < 0)		{angle += ANGLES;}
+	while (angle >= ANGLES)	{angle -= ANGLES;}
+	
 	temp = (long long)value * (long long)(1 << FRACTION);	// to fixed point
 	temp *= (long long)CosTable[angle];						// multiply with Cos
 	temp >>= FRACTION;										// bitshift correction
-	temp += FRACTION * 160;
+	//temp += FRACTION * 160;
 	temp /= (1 << FRACTION);								// convert back	
 	return (int)temp;										// cast to integer
 }
