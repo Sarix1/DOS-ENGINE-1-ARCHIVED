@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include "TYPES.H"
 
-struct BITMAP
+struct bitmap
 {
     word width;
     word height;
     byte palette[256*3];
-    byte far* data;
+    byte near* data;
 };
 
 void fskip(FILE* fp, int bytes);
-void loadBitmap(char* file, struct BITMAP* b);
-void setPixelsBitmap(struct BITMAP* bmp, int x, int y);
+void loadBitmap(char* file, struct bitmap* b, int palette_only);
+void setPixelsFromBitmap(struct bitmap* bmp, int x, int y);
 void setPalette(byte* palette);
