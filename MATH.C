@@ -37,6 +37,7 @@ int sinAngle(int value, int angle)
 	temp >>= FRACTION;										// bitshift correction
 	//temp += FRACTION * 160;
 	temp /= (1 << FRACTION);								// convert back	
+	
 	return (int)temp;										// cast to integer
 }
 
@@ -53,5 +54,6 @@ int cosAngle(int value, int angle)
 	temp >>= FRACTION;										// bitshift correction
 	//temp += FRACTION * 160;
 	temp /= (1 << FRACTION);								// convert back	
+	
 	return (int)temp;										// cast to integer
 }
