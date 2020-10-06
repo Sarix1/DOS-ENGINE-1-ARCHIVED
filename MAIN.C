@@ -1,5 +1,3 @@
-#define COMPILER_SANITY_CHECK 1
-
 #include <time.h>
 #include "TEXT.H"
 #include "TYPES.H"
@@ -108,5 +106,6 @@ int main()
 	// Exit
 	free(bmp.data);
 	setVideo(TEXT_MODE);
+	
 	return 0;
 }

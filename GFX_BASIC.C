@@ -339,31 +339,53 @@ int orient2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3)
 
 // Plot a slope and store its x coordinates on an array of y coordinates
 // The slope must run downwards, i.e. ay < by
-void makeSlope(struct Edge* slope, struct Point2D* p1, struct Point2D* p2, int y_offset)
+void makeSlope(struct Edge* edge, struct Point2D* p1, struct Point2D* p2, int y_offset)
 {
-	int x, y, px, dx, dy, x_sign;
+	int i, x, y, px, py, dx, dy, x_sign;
 	
-	dy = p2->y - p1->y;
-	dx = abs(p2->x - p1->x);
 	x_sign = sign(p2->x - p1->x);
+	dx = abs(p2->x - p1->x);
+	dy = p2->y - p1->y;
 	x = dy >> 1;
+	y = dx >> 1;
 	
 	// Out of bounds check - this should never happen
-	if (dy + y_offset > slope->bottom - slope->top)
+	if (dy + y_offset > edge->bottom - edge->top)
 		dy = 0; // too lazy to truncate, just don't draw it at all
 	
 	// Starting point
 	px = p1->x;
+	py = p1->y;
 	
-	for (y = 0; y <= dy; y++)
+	// Plot the slope, write only when py changes
+	if (dx > dy)
 	{
-		slope->points[y + y_offset] = px;
-		x += dx;
-		
-		if (x >= dy)
+		for (i = 0; i <= dx; i++)
 		{
-			x -= dy;
+			y += dy;
+			
+			if (y >= dx)
+			{
+				y -= dx;
+				edge->points[py++ + y_offset] = px;
+			}
+			
 			px += x_sign;
+		}
+	}
+	else
+	{
+		for (i = 0; i <= dy; i++)
+		{
+			x += dx;
+			
+			if (x >= dy)
+			{
+				x -= dy;
+				px += x_sign;
+			}
+			
+			edge->points[py++ + y_offset] = px;
 		}
 	}
 }
@@ -384,7 +406,7 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 	{
 		edges[i].top = p1.y;
 		edges[i].bottom = p3.y;
-		edges[i].points = malloc(sizeof(int) * ((p3.y - p1.y) + 1));
+		edges[i].points = (int*)malloc(sizeof(int) * ((p3.y - p1.y) + 1));
 	}
 	
 	if (orient2D(&p1, &p2, &p3) > 0)
@@ -420,6 +442,7 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 	// Free the allocated memory
 	free(edges[0].points);
 	free(edges[1].points);
+	free(edges);
 }
 
 // Draw a polygon outline
