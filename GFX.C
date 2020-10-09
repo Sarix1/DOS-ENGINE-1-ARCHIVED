@@ -3,32 +3,35 @@
 #include "MATH.H"
 #include "GFX.H"
 
+// Coverage spans between two edges for triangle/shape drawing
 static struct Coverage coverage;
 
-// CAUTION: no boundary checking in below functions!
+/*************************************************************/
+/* CAUTION: no boundary checking in most of below functions! */
+/*************************************************************/
 
 // Write a pixel to off-screen buffer or VGA buffer, depending where drawTarget points
-static void setPixel(int x, int y, int color)
+void setPixel(int x, int y, byte color)
 {
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 		drawTarget[(y<<8) + (y<<6) + x] = color;
 }
 
 // Fill the screen
-static void setPixelsAll(int color)
+void setPixelsAll(byte color)
 {
 	_fmemset(drawTarget, color, SCREEN_SIZE);
 }
 
 // Horizontal line
-static void setPixelsHorizontally(int x, int y, int len, int color)
+void setPixelsHorizontally(int x, int y, int len, byte color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
 	_fmemset(p, color, abs(len));
 }
 
 // Vertical line
-static void setPixelsVertically(int x, int y, int len, int color)
+void setPixelsVertically(int x, int y, int len, byte color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
 
@@ -40,7 +43,7 @@ static void setPixelsVertically(int x, int y, int len, int color)
 }
 
 // 45 degree line
-static void setPixelsDiagonally(int x, int y, int len, int horz_dir, int color)
+void setPixelsDiagonally(int x, int y, int len, int horz_dir, byte color)
 {
 	int offset = SCREEN_WIDTH;
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
@@ -70,7 +73,7 @@ static void setPixelsDiagonally(int x, int y, int len, int horz_dir, int color)
 }
 
 // Unorthodox line
-static void setPixelsSlope(int ax, int ay, int bx, int by, int color)
+void setPixelsSlope(int ax, int ay, int bx, int by, byte color)
 {
 	int i, x, y, px, py;
 	
@@ -123,37 +126,50 @@ static void setPixelsSlope(int ax, int ay, int bx, int by, int color)
 }
 
 // Put a single pixel
-void drawPixel(int x, int y, int color)
+void drawPixel( int x, int y,
+				byte color)
 {
-	// boundary check
+	// boundary check ?
 	setPixel(x, y, color);
 }
 
 // Fill the screen
-void drawFill(int color)
+void drawFill(byte color)
 {
 	setPixelsAll(color);
 }
 
 // Draw a line between two points
-void drawLine(struct Point2D* p1, struct Point2D* p2, int color)
+void drawLine(struct Point2D* p1, struct Point2D* p2, byte color)
 {
 	const int dx = p2->x - p1->x;
 	const int dy = p2->y - p1->y;
 	
 	// Use the specific functions for vertical, horizontal, diagonal, and slope
 	if (!dx)
-		setPixelsVertically(p1->x, (p1->y < p2->y ? p1->y : p2->y), abs(dy)+1, color);
+		setPixelsVertically(p1->x, 							// x start pos
+							(p1->y < p2->y ? p1->y : p2->y),// y start pos
+							abs(dy)+1, 						// length
+							color);
 	else if (!dy)
-		setPixelsHorizontally((p1->x < p2->x ? p1->x : p2->x), p1->y, abs(dx)+1, color);
+		setPixelsHorizontally(	(p1->x < p2->x ? p1->x : p2->x),// x start pos
+								p1->y,                          // y start pos
+								abs(dx)+1,                      // length
+								color);
 	else if (abs(dx) == abs(dy))
-		setPixelsDiagonally(p1->x, p1->y, dy + sign(dy), sign(dx), color);
+		setPixelsDiagonally(p1->x,			// x start pos
+							p1->y,			// y start pos
+							dy + sign(dy),	// length
+							sign(dx),		// horizontal direction
+							color);
 	else
-		setPixelsSlope(p1->x, p1->y, p2->x, p2->y, color);
+		setPixelsSlope( p1->x, p1->y,
+						p2->x, p2->y,
+						color);
 }
 
 // Draw multiple lines between points
-void drawLines(struct Point2D* points[], int color)
+void drawLines(struct Point2D* points[], byte color)
 {
 	int i = 0;
 	while (points[++i] != NULL)
@@ -163,7 +179,7 @@ void drawLines(struct Point2D* points[], int color)
 }
 
 // Draw a box
-void drawBoxFill(int x, int y, int w, int h, int color)
+void drawBoxFill(int x, int y, int w, int h, byte color)
 {
 	// Needs boundary checking here
 	while (h--)
@@ -171,13 +187,15 @@ void drawBoxFill(int x, int y, int w, int h, int color)
 }
 
 // Draw a box centered at x and y
-void drawBoxFillCenter(int x, int y, int w, int h, int color)
+void drawBoxFillCenter(int x, int y, int w, int h, byte color)
 {
 	drawBoxFill((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
 }
 
 // Draw a rectangular frame
-void drawBoxFrame(int x, int y, int w, int h, int color)
+void drawBoxFrame(int x, int y,
+				  int w, int h,
+				  byte color)
 {
 	// Needs boundary checking here
 	setPixelsHorizontally	(x,		y,		w,	color);
@@ -187,13 +205,13 @@ void drawBoxFrame(int x, int y, int w, int h, int color)
 }
 
 // Draw a rectangular frame centered at x and y
-void drawBoxFrameCenter(int x, int y, int w, int h, int color)
+void drawBoxFrameCenter(int x, int y, int w, int h, byte color)
 {
 	drawBoxFrame((x+1 - w/2 - w%2), (y+1 - h/2 - h%2), w, h, color);
 }
 
 // Circle drawing
-void drawCircleFrame(const int x, const int y, const int diameter, const int color)
+void drawCircleFrame(int x, int y, int diameter, byte color)
 {
 	// r is for inverse of remainder
 	// where FRACTION is involved, fixed point values are used
@@ -201,31 +219,31 @@ void drawCircleFrame(const int x, const int y, const int diameter, const int col
 	const long	inverseRadius	= ((1 / (float)radius) * (1 << FRACTION)) + 0.5;
 	const int	r				= (diameter % 2) ^ 1;
 	
-	int py				= radius;
-	int px				= 0;
-	long distance		= 0;
+	int py			= radius;
+	int px			= 0;
+	long distance	= 0;
 	long heightRatio;
 	
 	while (px <= py)
 	{
-		setPixel(x+px,		y-py+r,		color);
-		setPixel(x+px,		y+py,		color);
-		setPixel(x-px+r,	y-py+r,		color);
-		setPixel(x-px+r,	y+py,		color);
-		setPixel(x+py,		y-px+r,		color);
-		setPixel(x+py,		y+px,		color);
-		setPixel(x-py+r,	y-px+r,		color);
-		setPixel(x-py+r,	y+px,		color);
+		setPixel(x+px,		y-py+r,	color);
+		setPixel(x+px,		y+py,	color);
+		setPixel(x-px+r,	y-py+r,	color);
+		setPixel(x-px+r,	y+py,	color);
+		setPixel(x+py,		y-px+r,	color);
+		setPixel(x+py,		y+px,	color);
+		setPixel(x-py+r,	y-px+r,	color);
+		setPixel(x-py+r,	y+px,	color);
 
-		distance		+= inverseRadius;
-		heightRatio		 = SinAcosTable[distance >> FRAC_TO_TRIG];
-		py = (int)(((radius * (long long)heightRatio) >> FRACTION)) + 1;
+		distance   += inverseRadius;
+		heightRatio	= SinAcosTable[distance >> FRAC_TO_TRIG];
+		py			= (int)(((radius * (long long)heightRatio) >> FRACTION)) + 1;
 		px++;
 	}
 }
 
 // Filled circle
-void drawCircleFill(int x, int y, int diameter, int color)
+void drawCircleFill(int x, int y, int diameter, byte color)
 {
 	// r is for inverse of remainder
 	// where FRACTION is involved, fixed point values are used
@@ -234,9 +252,9 @@ void drawCircleFill(int x, int y, int diameter, int color)
 	const int	r				= (diameter % 2) ^ 1;
 
 	int w;
-	int py				= 1;
-	int px				= radius;
-	long distance		= 0x1F;
+	int py			= 1;
+	int px			= radius;
+	long distance	= 0x1F;
 	long widthRatio;
 	
 	if (!r)
@@ -248,24 +266,24 @@ void drawCircleFill(int x, int y, int diameter, int color)
 		setPixelsHorizontally(x-px+r,	y-py+r,	w,	color);
 		setPixelsHorizontally(x-px+r,	y+py,	w,	color);
 		
-		distance		+= inverseRadius;
-		widthRatio		 = SinAcosTable[distance >> FRAC_TO_TRIG];
-		px = (int)(((radius * (long long)widthRatio) >> FRACTION) + 1);
+		distance	+= inverseRadius;
+		widthRatio	 = SinAcosTable[distance >> FRAC_TO_TRIG];
+		px			 = (int)(((radius * (long long)widthRatio) >> FRACTION) + 1);
 		py++;
 	}
 }
 
 // Thick circle
-void drawCircleThick(int x, int y, int diameter, int thickness, int color)
+void drawCircleThick(int x, int y, int diameter, int thickness, byte color)
 {
 	// r is for inverse of remainder
 	// 2 suffix is for the inner circle
 	// where FRACTION is involved, fixed point values are used
-	const int	radius				= diameter / 2;
-	const int	radius2				= radius - thickness;
-	const long	inverseRadius		= ((1 / (float)radius) * (1 << FRACTION)) + 0.5;
-	const long	inverseRadius2		= ((1 / (float)radius2) * (1 << FRACTION)) + 0.5;
-	const int	r					= (diameter % 2) ^ 1;
+	const int	radius			= diameter / 2;
+	const int	radius2			= radius - thickness;
+	const long	inverseRadius	= ((1 / (float)radius) * (1 << FRACTION)) + 0.5;
+	const long	inverseRadius2	= ((1 / (float)radius2) * (1 << FRACTION)) + 0.5;
+	const int	r				= (diameter % 2) ^ 1;
 	
 	int w;
 	int py				= 1;
@@ -311,26 +329,9 @@ void drawCircleThick(int x, int y, int diameter, int thickness, int color)
 	}
 }
 
-// Sort points vertically first top to bottom, then horizontally left to right
-void sortPair(struct Point2D *a, struct Point2D *b)
-{
-    if ((a->y > b->y) || (a->y == b->y && a->x > b->x))
-	{
-    	struct Point2D tmp = *a;
-    	*a = *b;
-    	*b = tmp;
-    }
-}
-
-// Check which side of a line a point falls on
-int orient2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3)
-{
-	return (p2->x - p1->x) * (p3->y - p1->y) - (p2->y - p1->y) * (p3->x - p1->x);
-}
-
 // Plot a slope and store its x coordinates on an array of y coordinates
 // The slope must run downwards, i.e. ay < by
-static void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* p2)
+void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* p2)
 {
 	int i, x, y, px, py;
 	
@@ -399,7 +400,7 @@ static void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Po
 }
 
 // Draw a filled triangle
-void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, int color)
+void drawTriangleFillP(struct Point2D p1, struct Point2D p2, struct Point2D p3, byte color)
 {
 	int y;
 	int align;
@@ -415,7 +416,9 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 	if (p1.y == p3.y)
 	{
 		if (p1.x < p3.x)
-			setPixelsHorizontally(p1.x, p1.y, (p3.x - p1.x + 1), color);
+			setPixelsHorizontally(	p1.x, p1.y,
+									(p3.x - p1.x + 1),
+									color);
 		else
 			setPixel(p1.x, p1.y, color);
 		
@@ -433,11 +436,15 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 		align = RIGHT;
 	
 	// Calculate slope for the long edge
-	plotLine(&(coverage.edges[align]), (p1.x < p3.x ? align^1 : align), &p1, &p3);
+	plotLine(	&(coverage.edges[align]),
+				(p1.x < p3.x ? align^1 : align),
+				&p1, &p3);
 	
 	// Calculate slope for upper short edge
 	if (p1.y < p2.y)
-		plotLine(&(coverage.edges[align^1]), (p1.x < p2.x ? align : align^1), &p1, &p2);
+		plotLine(	&(coverage.edges[align^1]),
+					(p1.x < p2.x ? align : align^1),
+					&p1, &p2);
 	else
 	{
 		coverage.edges[0].x_at_y[p1.y] = p1.x;
@@ -446,7 +453,9 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 	
 	// Calculate slope for lower short edge
 	if (p2.y < p3.y)
-		plotLine(&(coverage.edges[align^1]), (p2.x < p3.x ? align : align^1), &p2, &p3);
+		plotLine(	&(coverage.edges[align^1]),
+					(p2.x < p3.x ? align : align^1),
+					&p2, &p3);
 	else
 	{
 		coverage.edges[0].x_at_y[p2.y] = p2.x;
@@ -454,18 +463,30 @@ void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, i
 	}
 	
 	// Draw horizontal scanlines
-	// Could use its own function really
 	for (y = coverage.top; y <= coverage.bottom; y++)
 	{
-		setPixelsHorizontally(coverage.edges[0].x_at_y[y], y, (coverage.edges[1].x_at_y[y] - coverage.edges[0].x_at_y[y] + 1), color);
+		setPixelsHorizontally(coverage.edges[0].x_at_y[y], y,
+							  (coverage.edges[1].x_at_y[y] - coverage.edges[0].x_at_y[y] + 1),
+							  color);
 	}
 }
 
+void drawTriangleFrame(struct Triangle2D* triangle, byte color)
+{
+	drawLine(&(triangle->point[0]), &(triangle->point[1]), color);
+	drawLine(&(triangle->point[1]), &(triangle->point[2]), color);
+	drawLine(&(triangle->point[2]), &(triangle->point[0]), color);
+}
+
+void drawTriangleFill(struct Triangle2D* triangle, byte color)
+{
+	drawTriangleFillP(triangle->point[0], triangle->point[1], triangle->point[2], color);
+}
+
 // Draw a flat-colored polygon outline
-void drawPolyFlatFrame(struct Point2D* points[], int color)
+void drawPolyFrameP(struct Point2D* points[], byte color)
 {
 	int i = 0;
-	
 	while (points[++i] != NULL)
 		drawLine(points[i-1], points[i], color);
 	
@@ -473,13 +494,12 @@ void drawPolyFlatFrame(struct Point2D* points[], int color)
 }
 
 // Draw a flat-colored filled polygon
-void drawPolyFlatFill(struct Point2D* points[], int color)
+void drawPolyFillP(struct Point2D* points[], byte color)
 {
 	int i = 1;
-	
 	while (points[i+1] != NULL)
 	{
-		drawTriangleFill(*points[0], *points[i], *points[i+1], color);
+		drawTriangleFillP(*points[0], *points[i], *points[i+1], color);
 		i++;
 	}
 }

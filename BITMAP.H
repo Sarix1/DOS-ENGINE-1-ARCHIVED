@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "TYPES.H"
 
-struct bitmap
+struct Bitmap
 {
     word width;
     word height;
@@ -9,7 +9,7 @@ struct bitmap
     byte near* data;
 };
 
-void fskip(FILE* fp, int bytes);
-void loadBitmap(char* file, struct bitmap* b, int palette_only);
-void setPixelsFromBitmap(struct bitmap* bmp, int x, int y);
-void setPalette(byte* palette);
+void fskip              (FILE* fp, int bytes);
+void loadBitmap         (char* file, struct Bitmap* b, int palette_only);
+void setPixelsFromBitmap(struct Bitmap* bmp, int x, int y);
+void setPalette         (byte* palette);

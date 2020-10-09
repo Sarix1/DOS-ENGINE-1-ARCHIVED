@@ -1,3 +1,5 @@
+#include "TYPES.H"
+
 // ANSI escape color codes
 enum color
 {
@@ -15,6 +17,6 @@ enum color
 };
 
 void setTextPosition(int x, int y);
-void setTextColor(int fg, int bg);
-void putText(char* string, int fg, int bg, int x, int y);
+void setTextColor(byte fg, byte bg);
+void putText(char* string, byte fg, byte bg, int x, int y);
 void resetText();

@@ -11,9 +11,10 @@ int main()
 {
 	// Test variables
 	int i, j, k;
-	struct bitmap bmp;
-	struct Point2D a, b, c, d, e, box_a, box_b, box_c, box_d;
+	struct Bitmap bmp;
+	struct Point2D a, b, box_a, box_b, box_c, box_d;
 	struct Point2D* boxPoints[5];
+	struct Triangle2D arrow;
 	clock_t start_t, end_t, run_t;
 	
 	// Initialize video
@@ -53,12 +54,13 @@ int main()
 		
 		b.x = a.x + cosAngle(80, k);
 		b.y = a.y - sinAngle(80, k);
-		c.x = b.x + cosAngle(15, k); 
-		c.y = b.y - sinAngle(15, k);
-		d.x = b.x - sinAngle(-5, k);
-		d.y = b.y + cosAngle(5, k);
-		e.x = b.x - sinAngle(5, k);
-		e.y = b.y + cosAngle(-5, k);
+		
+		arrow.point[0].x = b.x + cosAngle(15, k); 
+		arrow.point[0].y = b.y - sinAngle(15, k);
+		arrow.point[1].x = b.x - sinAngle(-5, k);
+		arrow.point[1].y = b.y + cosAngle(5, k);
+		arrow.point[2].x = b.x - sinAngle(5, k);
+		arrow.point[2].y = b.y + cosAngle(-5, k);
 		
 		box_a.x = a.x + cosAngle(60, k+j);
 		box_a.y = a.y - sinAngle(60, k+j);
@@ -73,32 +75,35 @@ int main()
 		drawFill(0);
 
 		// Box fill
-		drawPolyFlatFill(boxPoints, 5);
+		drawPolyFillP(boxPoints, 5);
 
 		// Box frame
-		drawPolyFlatFrame(boxPoints, 7);
+		drawPolyFrameP(boxPoints, 7);
 		
 		// Box corners
 		drawPixel(box_a.x, box_a.y, 12);
-		drawPixel(box_b.x, box_b.y, 12);
-		drawPixel(box_c.x, box_c.y, 12);
-		drawPixel(box_d.x, box_d.y, 12);
+		drawPixel(box_b.x, box_b.y, 13);
+		drawPixel(box_c.x, box_c.y, 14);
+		drawPixel(box_d.x, box_d.y, 15);
 		
 		// Circles in the middle
 		drawCircleThick(a.x, a.y, 15+i%45, 10, 12);
 		drawCircleFill(a.x, a.y, (i%45)/2, 9);
 		
 		// Draw bitmap image
-		setPixelsFromBitmap(&bmp, b.x-(bmp.width/2), b.y-(bmp.height/2));
+		setPixelsFromBitmap(&bmp, box_a.x-(bmp.width/2), box_a.y-(bmp.height/2));
 		
-		// Pointer arrow
+		// Pointer arrow stuff
 		drawLine(&a, &b, 15);
-		drawTriangleFill(c, d, e, 14);
+		drawTriangleFill(&arrow, 14);
 		drawCircleFrame(b.x, b.y, 15+i%15, 10);
 				
 		// Update buffer
 		updateBuffer();
 	}
+	
+	// Debug information
+	printf("%d\n", orient2D(&a, &box_a, &box_b));
 	
 	// Wait for user before exit
 	getch();

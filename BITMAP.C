@@ -11,7 +11,7 @@ void fskip(FILE* fp, int bytes)
 }
 
 // Store a bitmap into a struct
-void loadBitmap(char* file, struct bitmap* b, int palette_only)
+void loadBitmap(char* file, struct Bitmap* b, int palette_only)
 {
     FILE *fp;
     long index;
@@ -90,7 +90,7 @@ void setPalette(byte* palette)
 }
 
 // Copy a bitmap to the screen buffer
-void setPixelsFromBitmap(struct bitmap* bmp, int x, int y)
+void setPixelsFromBitmap(struct Bitmap* bmp, int x, int y)
 {
     int j;
     word offset = 0;

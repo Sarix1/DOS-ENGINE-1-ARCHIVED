@@ -41,7 +41,7 @@ void updateBuffer()
 }
 
 // Manual interrupt to set pixel in VGA memory
-void setPixelInt86(int x, int y, int color)
+void setPixelInt86(int x, int y, byte color)
 {
 	union REGS regs;
 	regs.h.ah = PLOT_PIXEL;
