@@ -1,27 +1,47 @@
-struct Point2D
+enum direction
 {
-	int x, y;
+	LEFT = 0,
+	RIGHT = 1,
+	UP = 2,
+	DOWN = 3
+};
+
+enum align
+{
+	TOP = 0,
+	BOTTOM = 1
 };
 
 struct Edge
 {
-	int top, bottom;
-	int* points;
+	int x_at_y[SCREEN_HEIGHT];
 };
 
-enum SIDE
+struct Coverage
 {
-	LEFT = 0,
-	RIGHT = 1
+	int top, bottom;
+	struct Edge edges[2];
+};
+
+struct DecoratedEdge
+{
+	int x_at_y[SCREEN_HEIGHT];
+	int color[SCREEN_HEIGHT];
+};
+
+struct DecoratedCoverage
+{
+	int top, bottom;
+	struct DecoratedEdge edges[2];
 };
 
 // Direct VGA memory manipulation
-void setPixel(int x, int y, int color);
-void setPixelsAll(int color);
-void setPixelsHorizontally(int x, int y, int len, int color);
-void setPixelsVertically(int x, int y, int len, int color);
-void setPixelsDiagonally(int x, int y, int len, int dir, int color);
-void setPixelsSlope(int ax, int ay, int bx, int by, int color);
+static void setPixel(int x, int y, int color);
+static void setPixelsAll(int color);
+static void setPixelsHorizontally(int x, int y, int len, int color);
+static void setPixelsVertically(int x, int y, int len, int color);
+static void setPixelsDiagonally(int x, int y, int len, int dir, int color);
+static void setPixelsSlope(int ax, int ay, int bx, int by, int color);
 
 // Abstracted basic drawing functions
 void drawPixel(int x, int y, int color);
@@ -39,7 +59,8 @@ void drawCircleThick(int x, int y, int diameter, int thickness, int color);
 // Triangles and polygons
 void sortPair(struct Point2D* p1, struct Point2D* p2);
 int orient2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3);
-void makeSlope(struct Edge* slope, struct Point2D* p1, struct Point2D* p2, int y_offset);
+static void plotLine(struct Edge* edge, int side, struct Point2D* p1, struct Point2D* p2);
+
 void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, int color);
-void drawPolygonFrame(struct Point2D* points[], int color);
-void drawPolygonFill(struct Point2D* points[], int color);
+void drawPolyFlatFrame(struct Point2D* points[], int color);
+void drawPolyFlatFill(struct Point2D* points[], int color);

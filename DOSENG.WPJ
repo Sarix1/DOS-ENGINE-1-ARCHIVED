@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
--5187
-702
-5046
-8552
+0
+263
+5034
+6524
 2
 MProject
 3
@@ -28,10 +28,10 @@ WVList
 VComponent
 8
 WRect
-164
-146
-5699
-4330
+158
+136
+5692
+4320
 0
 0
 9
@@ -39,5 +39,5 @@ WFileName
 10
 DOSENG.tgt
 0
-4
+0
 7

@@ -20,6 +20,13 @@
 #define angToDeg(x)			((double)(x) * DEGREES / ANGLES)
 #define degToAng(x)			((double)(x) * ANGLES / DEGREES)
 
+struct Point2D	{int x, y;};
+struct Point3D	{int x, y, z;};
+struct Vector2D	{long x, y;};
+struct Vector3D	{long x, y, z;};
+struct Vertex2D {int x, y, color;};
+struct Vertex3D {int x, y, z, color;};
+
 // Tables
 long			SinCosTable[ANGLES + ANGLES/4];
 long*			SinTable = SinCosTable;

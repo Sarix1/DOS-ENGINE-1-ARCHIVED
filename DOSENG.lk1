@@ -1,2 +1,2 @@
-FIL GFX_BASIC.obj,GFX_BITMAP.obj,GFX_SPRITE.obj,INPUT.obj,MAIN.obj,MATH.obj,TEXT.obj,VIDEO.obj
+FIL BITMAP.obj,GFX.obj,MAIN.obj,MATH.obj,SPRITE.obj,TEXT.obj,VIDEO.obj
 

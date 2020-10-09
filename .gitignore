@@ -1,2 +1,5 @@
 *.obj
 *.err
+*.BAK
+*.DSK
+*.PRJ

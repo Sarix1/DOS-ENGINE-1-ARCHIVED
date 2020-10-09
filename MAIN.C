@@ -1,10 +1,11 @@
 #include <time.h>
+#include "WATCOM.H"
 #include "TEXT.H"
 #include "TYPES.H"
 #include "MATH.H"
 #include "VIDEO.H"
-#include "GFX_BASIC.H"
-#include "GFX_BITMAP.H"
+#include "GFX.H"
+#include "BITMAP.H"
 
 int main()
 {
@@ -21,10 +22,8 @@ int main()
 	drawTarget = offScreen;
 	
 	// Load bitmap
-	/*
 	loadBitmap("PIC.BMP", &bmp, 0);
 	setPalette(bmp.palette);
-	*/
 	
 	// Set variables
 	i = 0;
@@ -48,7 +47,8 @@ int main()
 		}	
 
 		// Logic
-		i++; if (i >= 360) i = 0;
+		if (++i >= 360)
+			i = 0;
 		k = degToAng(i);
 		
 		b.x = a.x + cosAngle(80, k);
@@ -71,25 +71,25 @@ int main()
 
 		// Draw
 		drawFill(0);
-		
+
 		// Box fill
-		drawPolygonFill(boxPoints, 5);
-		
+		drawPolyFlatFill(boxPoints, 5);
+
 		// Box frame
-		drawPolygonFrame(boxPoints, 7);
+		drawPolyFlatFrame(boxPoints, 7);
 		
 		// Box corners
-		setPixel(box_a.x, box_a.y, 12);
-		setPixel(box_b.x, box_b.y, 12);
-		setPixel(box_c.x, box_c.y, 12);
-		setPixel(box_d.x, box_d.y, 12);
+		drawPixel(box_a.x, box_a.y, 12);
+		drawPixel(box_b.x, box_b.y, 12);
+		drawPixel(box_c.x, box_c.y, 12);
+		drawPixel(box_d.x, box_d.y, 12);
 		
 		// Circles in the middle
 		drawCircleThick(a.x, a.y, 15+i%45, 10, 12);
 		drawCircleFill(a.x, a.y, (i%45)/2, 9);
 		
 		// Draw bitmap image
-		// setPixelsFromBitmap(&bmp, b.x-(bmp.width/2), b.y-(bmp.height/2));
+		setPixelsFromBitmap(&bmp, b.x-(bmp.width/2), b.y-(bmp.height/2));
 		
 		// Pointer arrow
 		drawLine(&a, &b, 15);

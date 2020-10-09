@@ -1,78 +1,67 @@
 #include "TYPES.H"
 #include "VIDEO.H"
 #include "MATH.H"
-#include "GFX_BASIC.H"
+#include "GFX.H"
+
+static struct Coverage coverage;
 
 // CAUTION: no boundary checking in below functions!
 
 // Write a pixel to off-screen buffer or VGA buffer, depending where drawTarget points
-void setPixel(int x, int y, int color)
+static void setPixel(int x, int y, int color)
 {
 	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 		drawTarget[(y<<8) + (y<<6) + x] = color;
 }
 
 // Fill the screen
-void setPixelsAll(int color)
+static void setPixelsAll(int color)
 {
 	_fmemset(drawTarget, color, SCREEN_SIZE);
 }
 
 // Horizontal line
-void setPixelsHorizontally(int x, int y, int len, int color)
+static void setPixelsHorizontally(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
-	// this is a boundary check! move elsewhere?
-	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
-	{
-		// this is a crop! move elsewhere?
-		if (x+len >= SCREEN_WIDTH)
-			len -= (x+len - SCREEN_WIDTH);
-		
-		_fmemset(p, color, len);
-	}
+	_fmemset(p, color, abs(len));
 }
 
 // Vertical line
-void setPixelsVertically(int x, int y, int len, int color)
+static void setPixelsVertically(int x, int y, int len, int color)
 {
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
-	// this is a boundary check! move elsewhere?
-	if (x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
+
+	while (len--)
 	{
-		// this is a crop! move elsewhere?
-		if (y+len >= SCREEN_HEIGHT)
-			len -= (y+len - SCREEN_HEIGHT);
-		
-		while (len--)
-		{
-			*p = color;
-			p += SCREEN_WIDTH;
-		}
+		*p = color;
+		p += SCREEN_WIDTH;
 	}
 }
 
 // 45 degree line
-void setPixelsDiagonally(int x, int y, int len, int dir, int color)
+static void setPixelsDiagonally(int x, int y, int len, int horz_dir, int color)
 {
 	int offset = SCREEN_WIDTH;
 	byte far* p = drawTarget + (y<<8) + (y<<6) + x;
 	
-	// is the slope downwards...
+	// len determines upwards/downards direction (len > 0 == down)
+	// horz_dir determines left/right (horz_dir > 0 == right)
 	if (len > 0) 
 	{		
-		offset += dir;
-		while (len--)	// draw loop
+		offset += horz_dir;
+		
+		while (len--)
 		{
 			*p = color;
 			p += offset;
 		}
 	}
-	// ...or downwards?
 	else
 	{
-		offset -= dir;
-		while (len++)	// draw loop
+		offset -= horz_dir;
+		
+		while (len++)
 		{
 			*p = color;
 			p -= offset;
@@ -81,62 +70,54 @@ void setPixelsDiagonally(int x, int y, int len, int dir, int color)
 }
 
 // Unorthodox line
-void setPixelsSlope(int ax, int ay, int bx, int by, int color)
+static void setPixelsSlope(int ax, int ay, int bx, int by, int color)
 {
-	int i, x, y, px, py, dx, dy, dx_abs, dy_abs, x_sign, y_sign;
+	int i, x, y, px, py;
 	
-	dx = bx - ax;
-	dy = by - ay;
-	x_sign = sign(dx);
-	y_sign = sign(dy);
-	dx_abs = abs(dx);
-	dy_abs = abs(dy);
+	const int dx = bx - ax;
+	const int dy = by - ay;
+	const int dx_abs = abs(dx);
+	const int dy_abs = abs(dy);
+	const int x_sign = sign(dx);
+	const int y_sign = sign(dy);
+	
 	x = dy_abs >> 1;
 	y = dx_abs >> 1;
 	
 	// Starting point
 	px = ax;
 	py = ay;
-	
-	// Use the specific functions for vertical, horizontal, and diagonal lines
-	// if the coordinates suggest the line is at a right or diagonal angle instead
-	// This should probably be in drawLine() instead
-	if		(!dx_abs)			setPixelsVertically(ax, (ay < by ? ay : by), dy_abs+1, color);
-	else if (!dy_abs)			setPixelsHorizontally((ax < bx ? ax : bx), ay, dx_abs+1, color);
-	else if (dx_abs == dy_abs)	setPixelsDiagonally(ax, ay, dy+y_sign, x_sign, color);
-	else
-	{	
-		if (dx_abs > dy_abs)
+
+	if (dx_abs > dy_abs)
+	{
+		for (i = 0; i <= dx_abs; i++)
 		{
-			for (i = 0; i <= dx_abs; i++)
+			setPixel(px, py, color);
+			y += dy_abs;
+			
+			if (y >= dx_abs)
 			{
-				setPixel(px, py, color);
-				y += dy_abs;
-				
-				if (y >= dx_abs)
-				{
-					y -= dx_abs;
-					py += y_sign;
-				}
-				
-				px += x_sign;
-			}
-		}
-		else
-		{
-			for (i = 0; i <= dy_abs; i++)
-			{
-				setPixel(px, py, color);
-				x += dx_abs;
-				
-				if (x >= dy_abs)
-				{
-					x -= dy_abs;
-					px += x_sign;
-				}
-				
+				y -= dx_abs;
 				py += y_sign;
 			}
+			
+			px += x_sign;
+		}
+	}
+	else
+	{
+		for (i = 0; i <= dy_abs; i++)
+		{
+			setPixel(px, py, color);
+			x += dx_abs;
+			
+			if (x >= dy_abs)
+			{
+				x -= dy_abs;
+				px += x_sign;
+			}
+			
+			py += y_sign;
 		}
 	}
 }
@@ -157,8 +138,18 @@ void drawFill(int color)
 // Draw a line between two points
 void drawLine(struct Point2D* p1, struct Point2D* p2, int color)
 {
-	// optimize
-	setPixelsSlope(p1->x, p1->y, p2->x, p2->y, color);
+	const int dx = p2->x - p1->x;
+	const int dy = p2->y - p1->y;
+	
+	// Use the specific functions for vertical, horizontal, diagonal, and slope
+	if (!dx)
+		setPixelsVertically(p1->x, (p1->y < p2->y ? p1->y : p2->y), abs(dy)+1, color);
+	else if (!dy)
+		setPixelsHorizontally((p1->x < p2->x ? p1->x : p2->x), p1->y, abs(dx)+1, color);
+	else if (abs(dx) == abs(dy))
+		setPixelsDiagonally(p1->x, p1->y, dy + sign(dy), sign(dx), color);
+	else
+		setPixelsSlope(p1->x, p1->y, p2->x, p2->y, color);
 }
 
 // Draw multiple lines between points
@@ -339,38 +330,54 @@ int orient2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3)
 
 // Plot a slope and store its x coordinates on an array of y coordinates
 // The slope must run downwards, i.e. ay < by
-void makeSlope(struct Edge* edge, struct Point2D* p1, struct Point2D* p2, int y_offset)
+static void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* p2)
 {
-	int i, x, y, px, py, dx, dy, x_sign;
+	int i, x, y, px, py;
 	
-	x_sign = sign(p2->x - p1->x);
-	dx = abs(p2->x - p1->x);
-	dy = p2->y - p1->y;
+	const int dx = abs(p2->x - p1->x);
+	const int dy = p2->y - p1->y;
+	const int x_sign = sign(p2->x - p1->x);
+	
 	x = dy >> 1;
 	y = dx >> 1;
-	
-	// Out of bounds check - this should never happen
-	if (dy + y_offset > edge->bottom - edge->top)
-		dy = 0; // too lazy to truncate, just don't draw it at all
 	
 	// Starting point
 	px = p1->x;
 	py = p1->y;
 	
+	edge->x_at_y[p1->y] = p1->x;
+	edge->x_at_y[p2->y] = p2->x;
+	
 	// Plot the slope, write only when py changes
 	if (dx > dy)
-	{
-		for (i = 0; i <= dx; i++)
+	{	
+		if (align == TOP)
 		{
-			y += dy;
-			
-			if (y >= dx)
-			{
-				y -= dx;
-				edge->points[py++ + y_offset] = px;
+			for (i = 0; i <= dx; i++)
+			{	
+				if (y >= dx)
+				{
+					y -= dx;
+					edge->x_at_y[py++] = px;
+				}
+				
+				px += x_sign;
+				y += dy;
 			}
-			
-			px += x_sign;
+		}
+		else
+		{	
+			for (i = 0; i <= dx; i++)
+			{	
+				if (y >= dx)
+				{
+					y -= dx;
+					edge->x_at_y[++py] = px;
+				}
+				
+				px += x_sign;
+				y += dy;
+			}
 		}
 	}
 	else
@@ -385,81 +392,91 @@ void makeSlope(struct Edge* edge, struct Point2D* p1, struct Point2D* p2, int y_
 				px += x_sign;
 			}
 			
-			edge->points[py++ + y_offset] = px;
+			py++;
+			edge->x_at_y[py] = px;
 		}
 	}
 }
 
+// Draw a filled triangle
 void drawTriangleFill(struct Point2D p1, struct Point2D p2, struct Point2D p3, int color)
 {
-	int i, y, long_edge;
-	struct Edge edges[2];
+	int y;
+	int align;
 	
+	// Sort points vertically from top to bottom
+	// Sort horizontally aligned points left to right
 	sortPair(&p1, &p2);
 	sortPair(&p1, &p3);
 	sortPair(&p2, &p3);
 	
+	// If the triangle is small enough, it can be drawn as a horizontal line or single pixel
+	// In that case, do an early return and do not execute the rest of this function
 	if (p1.y == p3.y)
-		return;
-	
-	for (i = 0; i < 2; i++)
 	{
-		edges[i].top = p1.y;
-		edges[i].bottom = p3.y;
-		edges[i].points = (int*)malloc(sizeof(int) * ((p3.y - p1.y) + 1));
+		if (p1.x < p3.x)
+			setPixelsHorizontally(p1.x, p1.y, (p3.x - p1.x + 1), color);
+		else
+			setPixel(p1.x, p1.y, color);
+		
+		return;
 	}
 	
+	// Set the vertical coverage
+	coverage.top = p1.y;
+	coverage.bottom = p3.y;
+	
+	// Determine on which side the long edge is on
 	if (orient2D(&p1, &p2, &p3) > 0)
-		long_edge = LEFT;
+		align = LEFT;
 	else
-		long_edge = RIGHT;
+		align = RIGHT;
 	
 	// Calculate slope for the long edge
-	makeSlope(&(edges[long_edge]), &p1, &p3, 0);
+	plotLine(&(coverage.edges[align]), (p1.x < p3.x ? align^1 : align), &p1, &p3);
 	
-	i = 0;
-	
-	// The following two blocks should be a single inline function
-	
-	// Calculate slope for upper short edge and draw scanlines
+	// Calculate slope for upper short edge
 	if (p1.y < p2.y)
+		plotLine(&(coverage.edges[align^1]), (p1.x < p2.x ? align : align^1), &p1, &p2);
+	else
 	{
-		makeSlope(&(edges[long_edge^1]), &p1, &p2, 0);
-		
-		for (y = p1.y; y < p2.y; y++, i++)
-			setPixelsHorizontally(edges[0].points[i], y, (edges[1].points[i] - edges[0].points[i]), color);
+		coverage.edges[0].x_at_y[p1.y] = p1.x;
+		coverage.edges[1].x_at_y[p1.y] = p2.x;
 	}
 	
-	// Calculate slope for lower short edge and draw scanlines
+	// Calculate slope for lower short edge
 	if (p2.y < p3.y)
+		plotLine(&(coverage.edges[align^1]), (p2.x < p3.x ? align : align^1), &p2, &p3);
+	else
 	{
-		makeSlope(&(edges[long_edge^1]), &p2, &p3, (p2.y - p1.y));
-		
-		for (y = p2.y; y < p3.y; y++, i++)
-			setPixelsHorizontally(edges[0].points[i], y, (edges[1].points[i] - edges[0].points[i]), color);
+		coverage.edges[0].x_at_y[p2.y] = p2.x;
+		coverage.edges[1].x_at_y[p2.y] = p3.x;
 	}
 	
-	// Free the allocated memory
-	free(edges[0].points);
-	free(edges[1].points);
-	free(edges);
+	// Draw horizontal scanlines
+	// Could use its own function really
+	for (y = coverage.top; y <= coverage.bottom; y++)
+	{
+		setPixelsHorizontally(coverage.edges[0].x_at_y[y], y, (coverage.edges[1].x_at_y[y] - coverage.edges[0].x_at_y[y] + 1), color);
+	}
 }
 
-// Draw a polygon outline
-void drawPolygonFrame(struct Point2D* points[], int color)
+// Draw a flat-colored polygon outline
+void drawPolyFlatFrame(struct Point2D* points[], int color)
 {
 	int i = 0;
+	
 	while (points[++i] != NULL)
-	{
 		drawLine(points[i-1], points[i], color);
-	}
+	
 	drawLine(points[i-1], points[0], color);
 }
 
-// Draw a filled polygon
-void drawPolygonFill(struct Point2D* points[], int color)
+// Draw a flat-colored filled polygon
+void drawPolyFlatFill(struct Point2D* points[], int color)
 {
 	int i = 1;
+	
 	while (points[i+1] != NULL)
 	{
 		drawTriangleFill(*points[0], *points[i], *points[i+1], color);

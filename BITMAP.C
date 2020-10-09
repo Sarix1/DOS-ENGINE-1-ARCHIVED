@@ -1,6 +1,6 @@
 #include "TEXT.H"
 #include "VIDEO.H"
-#include "GFX_BITMAP.H"
+#include "BITMAP.H"
 
 // Skip bytes in a file
 void fskip(FILE* fp, int bytes)

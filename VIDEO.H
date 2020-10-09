@@ -27,7 +27,7 @@ byte far* drawTarget;
 void setVideo(byte mode);
 void initVideo();
 void updateBuffer();
-inline void setPixelInt86(int x, int y, int color);
+void setPixelInt86(int x, int y, int color);
 
 // CAUTION: use of (y<<8)+(y<<6) in graphics code assumes a 320x200 resolution;
 // Replace with y*SCREEN_WIDTH otherwise, but lose the optimization benefit
