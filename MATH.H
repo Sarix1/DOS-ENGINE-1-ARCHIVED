@@ -50,10 +50,10 @@ struct Point2D		{long x, y;		};
 struct Point3D		{long x, y, z;	};
 struct Vertex2D 	{long x, y;		byte color;	};
 struct Vertex3D 	{long x, y, z;	byte color;	};
-struct Triangle2D	{struct Point2D point[3];	};
-struct Triangle3D	{struct Point3D point[3];	};
-struct Polygon2D	{struct Point2D* point;		};
-struct Polygon3D	{struct Point3D* point;		};
+struct Triangle2D	{struct Point2D* point[3];	byte color;};
+struct Triangle3D	{struct Point3D* point[3];	byte color;};
+struct Polygon2D	{struct Point2D* point;		byte color;};
+struct Polygon3D	{struct Point3D* point;		byte color;};
 
 // Tables
 long		SinCosTable[ANGLES + ANGLES/4];
@@ -65,12 +65,22 @@ unsigned	SinAcosTable[TRIGONOMETRY];
 void initTrigTables	();
 int sinAngle		(int value, int angle);
 int cosAngle		(int value, int angle);
-long dot2D			(struct Point2D* p1, struct Point2D* p2);
-long cross2D		(struct Point2D* p1, struct Point2D* p2);
-void sub2D			(struct Point2D* p1, struct Point2D* p2, struct Point2D* result);
-long dot3D			(struct Point3D* p1, struct Point3D* p2);
-void sub3D			(struct Point3D* p1, struct Point3D* p2, struct Point3D* result);
-void sortPair		(struct Point2D* p1, struct Point2D* p2);
-int orient2D		(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3);
-int lineSegIntersect(struct Point2D* p1, struct Point2D* p2,
-					 struct Point2D* p3, struct Point2D* p4, struct Point2D* intersection);
+long dot2D			(const struct Point2D* p1, const struct Point2D* p2);
+long cross2D		(const struct Point2D* p1, const struct Point2D* p2);
+void sub2D			(const struct Point2D* p1, const struct Point2D* p2, struct Point2D* result);
+long dot3D			(const struct Point3D* p1, const struct Point3D* p2);
+void sub3D			(const struct Point3D* p1, const struct Point3D* p2, struct Point3D* result);
+void sortPair		(struct Point2D** p1, struct Point2D** p2);
+int orient2D		(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3);
+int lineSegIntersect(const struct Point2D* p1, const struct Point2D* p2,
+					 const struct Point2D* p3, const struct Point2D* p4, struct Point2D* intersection);
+
+// New structs
+struct Point2D*		newPoint2D		(long x, long y);
+struct Point3D*		newPoint3D		(long x, long y, long z);
+struct Vertex2D*	newVertex2D		(long x, long y, byte color);
+struct Vertex3D*	newVertex3D		(long x, long y, long z, byte color);
+struct Triangle2D*	newTriangle2D	(long ax, long ay, long bx, long by, long cx, long cy, byte color);
+struct Triangle2D*	newTriangle2D_P	(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3, byte color);
+struct Triangle3D*	newTriangle3D	(long ax, long ay, long az, long bx, long by, long bz, long cx, long cy, long cz, byte color);
+struct Triangle3D*	newTriangle3D_P	(const struct Point3D* p1, const struct Point3D* p2, const struct Point3D* p3, byte color);

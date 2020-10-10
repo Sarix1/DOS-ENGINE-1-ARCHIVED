@@ -331,7 +331,7 @@ void drawCircleThick(int x, int y, int diameter, int thickness, byte color)
 
 // Plot a slope and store its x coordinates on an array of y coordinates
 // The slope must run downwards, i.e. ay < by
-void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* p2)
+void plotLine(struct Edge* edge, int align, const struct Point2D* p1, const struct Point2D* p2)
 {
 	int i, x, y, px, py;
 	
@@ -399,11 +399,28 @@ void plotLine(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* 
 	}
 }
 
+// Draw a triangle frame
+void drawTriangleFrame(const struct Triangle2D* triangle)
+{
+	drawLine(triangle->point[0], triangle->point[1], triangle->color);
+	drawLine(triangle->point[1], triangle->point[2], triangle->color);
+	drawLine(triangle->point[2], triangle->point[0], triangle->color);
+}
+
+// Draw a Triangle2D struct by passing its data to the actual drawing function
+void drawTriangleFill(const struct Triangle2D* triangle)
+{
+	drawTriangleFill_P(triangle->point[0], triangle->point[1], triangle->point[2], triangle->color);
+}
+
 // Draw a filled triangle
-void drawTriangleFillP(struct Point2D p1, struct Point2D p2, struct Point2D p3, byte color)
+void drawTriangleFill_P(const struct Point2D* p1_, const struct Point2D* p2_, const struct Point2D* p3_, byte color)
 {
 	int y;
 	int align;
+	struct Point2D* p1 = p1_;
+	struct Point2D* p2 = p2_;
+	struct Point2D* p3 = p3_;
 	
 	// Sort points vertically from top to bottom
 	// Sort horizontally aligned points left to right
@@ -413,78 +430,56 @@ void drawTriangleFillP(struct Point2D p1, struct Point2D p2, struct Point2D p3, 
 	
 	// If the triangle is small enough, it can be drawn as a horizontal line or single pixel
 	// In that case, do an early return and do not execute the rest of this function
-	if (p1.y == p3.y)
+	if (p1->y == p3->y)
 	{
-		if (p1.x < p3.x)
-			setPixelsHorizontally(	p1.x, p1.y,
-									(p3.x - p1.x + 1),
-									color);
+		if (p1->x < p3->x)
+			setPixelsHorizontally(p1->x, p1->y, (p3->x - p1->x + 1), color);
 		else
-			setPixel(p1.x, p1.y, color);
+			setPixel(p1->x, p1->y, color);
 		
 		return;
 	}
 	
 	// Set the vertical coverage
-	coverage.top = p1.y;
-	coverage.bottom = p3.y;
+	coverage.top	= p1->y;
+	coverage.bottom	= p3->y;
 	
 	// Determine on which side the long edge is on
-	if (orient2D(&p1, &p2, &p3) > 0)
+	if (orient2D(p1, p2, p3) > 0)
 		align = LEFT;
 	else
 		align = RIGHT;
 	
 	// Calculate slope for the long edge
-	plotLine(	&(coverage.edges[align]),
-				(p1.x < p3.x ? align^1 : align),
-				&p1, &p3);
+	plotLine(&(coverage.edges[align]), (p1->x < p3->x ? align^1 : align), p1, p3);
 	
 	// Calculate slope for upper short edge
-	if (p1.y < p2.y)
-		plotLine(	&(coverage.edges[align^1]),
-					(p1.x < p2.x ? align : align^1),
-					&p1, &p2);
+	if (p1->y < p2->y)
+		plotLine(&(coverage.edges[align^1]), (p1->x < p2->x ? align : align^1), p1, p2);
 	else
 	{
-		coverage.edges[0].x_at_y[p1.y] = p1.x;
-		coverage.edges[1].x_at_y[p1.y] = p2.x;
+		coverage.edges[0].x_at_y[p1->y] = p1->x;
+		coverage.edges[1].x_at_y[p1->y] = p2->x;
 	}
 	
 	// Calculate slope for lower short edge
-	if (p2.y < p3.y)
-		plotLine(	&(coverage.edges[align^1]),
-					(p2.x < p3.x ? align : align^1),
-					&p2, &p3);
+	if (p2->y < p3->y)
+		plotLine(&(coverage.edges[align^1]), (p2->x < p3->x ? align : align^1), p2, p3);
 	else
 	{
-		coverage.edges[0].x_at_y[p2.y] = p2.x;
-		coverage.edges[1].x_at_y[p2.y] = p3.x;
+		coverage.edges[0].x_at_y[p2->y] = p2->x;
+		coverage.edges[1].x_at_y[p2->y] = p3->x;
 	}
 	
 	// Draw horizontal scanlines
 	for (y = coverage.top; y <= coverage.bottom; y++)
 	{
-		setPixelsHorizontally(coverage.edges[0].x_at_y[y], y,
-							  (coverage.edges[1].x_at_y[y] - coverage.edges[0].x_at_y[y] + 1),
-							  color);
+		setPixelsHorizontally(coverage.edges[0].x_at_y[y], y, (coverage.edges[1].x_at_y[y] - coverage.edges[0].x_at_y[y] + 1), color);
 	}
 }
 
-void drawTriangleFrame(struct Triangle2D* triangle, byte color)
-{
-	drawLine(&(triangle->point[0]), &(triangle->point[1]), color);
-	drawLine(&(triangle->point[1]), &(triangle->point[2]), color);
-	drawLine(&(triangle->point[2]), &(triangle->point[0]), color);
-}
-
-void drawTriangleFill(struct Triangle2D* triangle, byte color)
-{
-	drawTriangleFillP(triangle->point[0], triangle->point[1], triangle->point[2], color);
-}
-
 // Draw a flat-colored polygon outline
-void drawPolyFrameP(struct Point2D* points[], byte color)
+void drawPolyFrame_P(const struct Point2D* points[], byte color)
 {
 	int i = 0;
 	while (points[++i] != NULL)
@@ -494,12 +489,12 @@ void drawPolyFrameP(struct Point2D* points[], byte color)
 }
 
 // Draw a flat-colored filled polygon
-void drawPolyFillP(struct Point2D* points[], byte color)
+void drawPolyFill_P(const struct Point2D* points[], byte color)
 {
 	int i = 1;
 	while (points[i+1] != NULL)
 	{
-		drawTriangleFillP(*points[0], *points[i], *points[i+1], color);
+		drawTriangleFill_P(points[0], points[i], points[i+1], color);
 		i++;
 	}
 }

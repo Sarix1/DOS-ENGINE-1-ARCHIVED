@@ -11,10 +11,12 @@ int main()
 {
 	// Test variables
 	int i, j, k;
+	
 	struct Bitmap bmp;
-	struct Point2D a, b, box_a, box_b, box_c, box_d;
+	struct Point2D a, b, box_a, box_b, box_c, box_d, tri_a, tri_b, tri_c;
 	struct Point2D* boxPoints[5];
-	struct Triangle2D arrow;
+	struct Triangle2D* arrow = newTriangle2D_P(&tri_a, &tri_b, &tri_c, 15);
+	
 	clock_t start_t, end_t, run_t;
 	
 	// Initialize video
@@ -30,6 +32,7 @@ int main()
 	i = 0;
 	j = degToAng(45);
 	k = 0;
+	
 	a.x = SCREEN_WIDTH/2-1;
 	a.y = SCREEN_HEIGHT/2-1;
 	
@@ -55,12 +58,13 @@ int main()
 		b.x = a.x + cosAngle(80, k);
 		b.y = a.y - sinAngle(80, k);
 		
-		arrow.point[0].x = b.x + cosAngle(15, k); 
-		arrow.point[0].y = b.y - sinAngle(15, k);
-		arrow.point[1].x = b.x - sinAngle(-5, k);
-		arrow.point[1].y = b.y + cosAngle(5, k);
-		arrow.point[2].x = b.x - sinAngle(5, k);
-		arrow.point[2].y = b.y + cosAngle(-5, k);
+		arrow->point[0]->x = b.x + cosAngle(15, k); 
+		arrow->point[0]->y = b.y - sinAngle(15, k);
+		arrow->point[1]->x = b.x - sinAngle(-5, k);
+		arrow->point[1]->y = b.y + cosAngle(5, k);
+		arrow->point[2]->x = b.x - sinAngle(5, k);
+		arrow->point[2]->y = b.y + cosAngle(-5, k);
+		arrow->color = i / 2;
 		
 		box_a.x = a.x + cosAngle(60, k+j);
 		box_a.y = a.y - sinAngle(60, k+j);
@@ -75,10 +79,10 @@ int main()
 		drawFill(0);
 
 		// Box fill
-		drawPolyFillP(boxPoints, 5);
+		drawPolyFill_P(boxPoints, 5);
 
 		// Box frame
-		drawPolyFrameP(boxPoints, 7);
+		drawPolyFrame_P(boxPoints, 7);
 		
 		// Box corners
 		drawPixel(box_a.x, box_a.y, 12);
@@ -95,7 +99,7 @@ int main()
 		
 		// Pointer arrow stuff
 		drawLine(&a, &b, 15);
-		drawTriangleFill(&arrow, 14);
+		drawTriangleFill(arrow);
 		drawCircleFrame(b.x, b.y, 15+i%15, 10);
 				
 		// Update buffer

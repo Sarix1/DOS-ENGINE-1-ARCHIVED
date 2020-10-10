@@ -43,12 +43,12 @@ void drawCircleFill		(int x, int y, int diameter, byte color);
 void drawCircleThick	(int x, int y, int diameter, int thickness, byte color);
 
 // Triangle and polygon drawing functions
-void plotLine			(struct Edge* edge, int align, struct Point2D* p1, struct Point2D* p2);
-void drawTriangleFrameP	(struct Point2D p1, struct Point2D p2, struct Point2D p3, byte color);
-void drawTriangleFillP	(struct Point2D p1, struct Point2D p2, struct Point2D p3, byte color);
-void drawTriangleFrame	(struct Triangle2D* triangle, byte color);
-void drawTriangleFill	(struct Triangle2D* triangle, byte color);
-void drawPolyFrameP	(struct Point2D* points[], byte color);
-void drawPolyFillP	(struct Point2D* points[], byte color);
-void drawPolyFrame	(struct Polygon2D* polygon, byte color);
-void drawPolyFill	(struct Polygon2D* polygon, byte color);
+void plotLine			(struct Edge* edge, int align, const struct Point2D* p1, const struct Point2D* p2);
+void drawTriangleFrame_P(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3, byte color);
+void drawTriangleFill_P	(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3, byte color);
+void drawTriangleFrame	(const struct Triangle2D* triangle);
+void drawTriangleFill	(const struct Triangle2D* triangle);
+void drawPolyFrame		(const struct Polygon2D* polygon);
+void drawPolyFrame_P	(const struct Point2D* points[], byte color);
+void drawPolyFill		(const struct Polygon2D* polygon);
+void drawPolyFill_P		(const struct Point2D* points[], byte color);

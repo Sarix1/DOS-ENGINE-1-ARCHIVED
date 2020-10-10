@@ -61,32 +61,32 @@ int cosAngle(int value, int angle)
 }
 
 // 2D dot product
-long dot2D(struct Point2D* p1, struct Point2D* p2)
+long dot2D(const struct Point2D* p1, const struct Point2D* p2)
 {
 	return (p1->x * p2->x) + (p1->y * p2->y);
 }
 
 // 2D cross product
-long cross2D(struct Point2D* p1, struct Point2D* p2)
+long cross2D(const struct Point2D* p1, const struct Point2D* p2)
 {
 	return (p1->x * p2->y) + (p1->y * p2->x);
 }
 
 // Subtract positions between 2D points
-void sub2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* result)
+void sub2D(const struct Point2D* p1, const struct Point2D* p2, struct Point2D* result)
 {
 	result->x = p1->x - p2->x;
 	result->x = p1->y - p2->y;
 }
 
 // 3D dot product
-long dot3D(struct Point3D* p1, struct Point3D* p2)
+long dot3D(const struct Point3D* p1, const struct Point3D* p2)
 {
 	return (p1->x * p2->x) + (p1->y * p2->y) + (p1->z * p2->z);
 }
 
 // Subtract positions between 3D points
-void sub3D(struct Point3D* p1, struct Point3D* p2, struct Point3D* result)
+void sub3D(const struct Point3D* p1, const struct Point3D* p2, struct Point3D* result)
 {
 	result->x = p1->x - p2->x;
 	result->x = p1->y - p2->y;
@@ -94,25 +94,25 @@ void sub3D(struct Point3D* p1, struct Point3D* p2, struct Point3D* result)
 }
 
 // Sort 2D points vertically first top to bottom, then horizontally left to right
-void sortPair(struct Point2D *a, struct Point2D *b)
+void sortPair(struct Point2D** p1, struct Point2D** p2)
 {
-    if ((a->y > b->y) || (a->y == b->y && a->x > b->x))
+    if (((*p1)->y > (*p2)->y) || ((*p1)->y == (*p2)->y && (*p1)->x > (*p2)->x))
 	{
-    	struct Point2D tmp = *a;
-    	*a = *b;
-    	*b = tmp;
+    	struct Point2D* tmp = *p1;
+    	*p1 = *p2;
+    	*p2 = tmp;
     }
 }
 
 // Check which side of a line (p2 to p3) a 2D point (p1) falls on
-int orient2D(struct Point2D* p1, struct Point2D* p2, struct Point2D* p3)
+int orient2D(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3)
 {
 	return ((p2->x - p1->x) * (p3->y - p1->y)) - ((p2->y - p1->y) * (p3->x - p1->x));
 }
 
 // Test if two line segments intersect
-int lineSegIntersect(struct Point2D* p1, struct Point2D* p2, // 1st line
-					 struct Point2D* p3, struct Point2D* p4, // 2nd line
+int lineSegIntersect(const struct Point2D* p1, const struct Point2D* p2, // 1st line
+					 const struct Point2D* p3, const struct Point2D* p4, // 2nd line
 					 struct Point2D* intersection)
 {
 	long a1, a2, b1, b2, c1, c2;	
@@ -163,4 +163,96 @@ int lineSegIntersect(struct Point2D* p1, struct Point2D* p2, // 1st line
 	intersection->y = (num < 0 ? num - offset : num + offset) / denom;
 	
 	return DO_INTERSECT;
+}
+
+struct Point2D* newPoint2D(long x, long y)
+{
+	struct Point2D* new = (struct Point2D*)malloc(sizeof(struct Point2D));
+	
+	new->x = x;
+	new->y = y;
+	
+	return new;
+}
+
+struct Point3D* newPoint3D(long x, long y, long z)
+{
+	struct Point3D* new = (struct Point3D*)malloc(sizeof(struct Point3D));
+	
+	new->x = x;
+	new->y = y;
+	new->z = z;
+	
+	return new;
+}
+
+struct Vertex2D* newVertex2D(long x, long y, byte color)
+{
+	struct Vertex2D* new = (struct Vertex2D*)malloc(sizeof(struct Vertex2D));
+	
+	new->x = x;
+	new->y = y;
+	new->color = color;
+	
+	return new;
+}
+
+struct Vertex3D* newVertex3D(long x, long y, long z, byte color)
+{
+	struct Vertex3D* new = (struct Vertex3D*)malloc(sizeof(struct Vertex3D));
+	
+	new->x = x;
+	new->y = y;
+	new->z = z;
+	new->color = color;
+	
+	return new;
+}
+
+struct Triangle2D* newTriangle2D(long ax, long ay, long bx, long by, long cx, long cy, byte color)
+{
+	struct Triangle2D* new = (struct Triangle2D*)malloc(sizeof(struct Triangle2D));
+	
+	new->point[0] = newPoint2D(ax, ay);
+	new->point[1] = newPoint2D(bx, by);
+	new->point[2] = newPoint2D(cx, cy);
+	new->color = color;
+	
+	return new;
+}
+
+struct Triangle2D* newTriangle2D_P(const struct Point2D* p1, const struct Point2D* p2, const struct Point2D* p3, byte color)
+{
+	struct Triangle2D* new = (struct Triangle2D*)malloc(sizeof(struct Triangle2D));
+	
+	new->point[0] = p1;
+	new->point[1] = p2;
+	new->point[2] = p3;
+	new->color = color;
+	
+	return new;
+}
+
+struct Triangle3D* newTriangle3D(long ax, long ay, long az, long bx, long by, long bz, long cx, long cy, long cz, byte color)
+{
+	struct Triangle3D* new = (struct Triangle3D*)malloc(sizeof(struct Triangle3D));
+	
+	new->point[0] = newPoint3D(ax, ay, az);
+	new->point[1] = newPoint3D(bx, by, bz);
+	new->point[2] = newPoint3D(cx, cy, cz);
+	new->color = color;
+	
+	return new;
+}
+
+struct Triangle3D* newTriangle3D_P(const struct Point3D* p1, const struct Point3D* p2, const struct Point3D* p3, byte color)
+{
+	struct Triangle3D* new = (struct Triangle3D*)malloc(sizeof(struct Triangle3D));
+	
+	new->point[0] = p1;
+	new->point[1] = p2;
+	new->point[2] = p3;
+	new->color = color;
+	
+	return new;
 }
